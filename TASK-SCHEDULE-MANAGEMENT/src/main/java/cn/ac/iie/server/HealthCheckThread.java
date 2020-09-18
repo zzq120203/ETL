@@ -12,18 +12,23 @@ import java.util.TimerTask;
 
 public class HealthCheckThread extends TimerTask {
 
-    private RedisPool redisPool;
     public static Set<String> nodesActive = new HashSet<>();
     public static Set<String> nodesMightDown = new HashSet<>();
+    private RedisPool redisPool = null;
 
-    public HealthCheckThread(){
-        redisPool = new RedisPool(TSMConf.redisSentinels, TSMConf.myMaster);
+    private Jedis getRedis(){
+        if (redisPool == null){
+            synchronized (this){
+                if (redisPool == null)
+                    redisPool = new RedisPool(TSMConf.redisSentinels, TSMConf.myMaster);
+            }
+        }
+        return redisPool.getResource();
     }
-
     @Override
     public void run() {
         //1.检查node状态
-        Jedis jedis = redisPool.getResource();
+        Jedis jedis = getRedis();
         Set<String> serverNodes = jedis.smembers(TSMConf.serverNodes);
         for (String serverNode : serverNodes) {
             if (!jedis.exists(TSMConf.heartbeatsPre + serverNode)){

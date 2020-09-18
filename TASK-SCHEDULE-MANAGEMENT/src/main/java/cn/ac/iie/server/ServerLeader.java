@@ -10,8 +10,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ServerLeader extends TimerTask {
-    private RedisPool redisPool = null;
     private String sha = null;
+    private RedisPool redisPool = null;
 
     private Jedis getRedis(){
         if (redisPool == null){
@@ -63,6 +63,7 @@ public class ServerLeader extends TimerTask {
                 TSMConf.leaderName = TSMConf.nodeName;
                 if (result.contains("elected")){
                     LogTool.logInfo(1, result);
+                    startConsume();
                 }
             }else {
                 TSMConf.isLeader = false;
@@ -77,4 +78,10 @@ public class ServerLeader extends TimerTask {
         }
     }
 
+    public void startConsume() {
+        RabbitMQConsumer rabbitMQConsumer = new RabbitMQConsumer();
+        Thread thread = new Thread(rabbitMQConsumer);
+        thread.setName("consumer-thread");
+        thread.start();
+    }
 }

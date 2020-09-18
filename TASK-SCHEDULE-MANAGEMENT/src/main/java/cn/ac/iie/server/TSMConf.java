@@ -38,8 +38,12 @@ public class TSMConf {
     public static String leaderPeriod;
     @From(name = "leaderExpire")
     public static String leaderExpire;
-    @From(name = "nodeName")
+    @From(name = "nodeName", must = false)
     public static String nodeName;
+    @From(name = "leaderName", must = false)
+    public static String leaderName;
+    @From(name = "isLeader", must = false)
+    public static boolean isLeader = false;
 
     @From(name = "taskQueue")
     public static String taskQueue;

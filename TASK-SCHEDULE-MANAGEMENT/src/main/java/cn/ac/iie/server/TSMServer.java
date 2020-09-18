@@ -5,6 +5,7 @@ import com.zzq.dolls.config.LoadConfig;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Timer;
 
 public class TSMServer {
     public static String outsideIp = null;
@@ -30,6 +31,12 @@ public class TSMServer {
                 }
             }
             LogTool.logInfo(1, "server running , node name is " + TSMConf.nodeName);
+            //leader 选举线程
+            Timer timer = new Timer();
+            ServerLeader serverLeader = new ServerLeader();
+            timer.schedule(serverLeader, 10, Long.parseLong(TSMConf.leaderPeriod)*1000l);
+            //
+
 
         } catch (IOException e) {
             e.printStackTrace();

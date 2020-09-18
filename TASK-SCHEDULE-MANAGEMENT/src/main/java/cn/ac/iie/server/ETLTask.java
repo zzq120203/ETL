@@ -173,17 +173,9 @@ public class ETLTask implements Runnable {
      * @param task
      */
     public static void taskStore(String task){
-        Jedis jedis = null;
-        try{
-            jedis = getRedis();
-            String taskId = getTaskId(task);
-            jedis.hset(TSMConf.allTask, taskId, task);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            if (jedis != null){
-                jedis.close();
-            }
-        }
+        Jedis jedis = getRedis();
+        String taskId = getTaskId(task);
+        jedis.hset(TSMConf.allTask, taskId, task);
+        jedis.close();
     }
 }

@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class RabbitMQConsumer implements Runnable {
-    private static ConnectionFactory factory = null;
+    private ConnectionFactory factory = null;
 
 
     @Override
@@ -38,8 +38,9 @@ public class RabbitMQConsumer implements Runnable {
                 public void handleDelivery(String consumerTag, Envelope envelope,
                                            AMQP.BasicProperties properties, byte[] body) throws IOException {
                     String task = new String(body);
-//                    ETLTask.taskStore(task);
-//                    LogTool.logInfo(2,"recv and store task : " + task);
+                    ETLTask.taskStore(task);
+                    LogTool.logInfo(2,"recv and store task : " + task);
+                    
 
                     TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
                     System.out.println(taskEntity.toString());
@@ -50,6 +51,8 @@ public class RabbitMQConsumer implements Runnable {
         } catch (TimeoutException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
