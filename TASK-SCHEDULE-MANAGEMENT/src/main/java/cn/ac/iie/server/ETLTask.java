@@ -86,6 +86,16 @@ public class ETLTask implements Runnable {
             jedis.lpush(TSMConf.nodeToTaskIdPre + node, task);
         }
     }
+    private void deleteMeta(String taskId){
+        Jedis jedis = getRedis();
+        Pipeline pipeline = jedis.pipelined();
+//        pipeline.lpush(TSMConf.nodeTasksPre + node, task);
+        pipeline.hdel(TSMConf.taskIdToNode, taskId);
+        pipeline.srem(TSMConf.nodeToTaskIdPre, taskId);
+        pipeline.sync();
+        pipeline.close();
+        jedis.close();
+    }
     public static class GetTaskResult implements Callable {
         String id;
 
@@ -118,13 +128,14 @@ public class ETLTask implements Runnable {
 
     private TaskAction getActionType(String task){
         //TODO://action analysis
-        String action = "";
+        TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
+        String action = taskEntity.getState() + "";
         switch (action){
-            case "1":
+            case "0":
                 return TaskAction.ADD;
-            case "2":
+            case "1":
                 return TaskAction.UPDATE;
-            case "3":
+            case "2":
                 return TaskAction.DELETE;
             default:
                 LogTool.logInfo(TSMConf.logLevel, "Task action analysis error with action = " + action);

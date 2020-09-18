@@ -40,11 +40,11 @@ public class RabbitMQConsumer implements Runnable {
                     String task = new String(body);
                     ETLTask.taskStore(task);
                     LogTool.logInfo(2,"recv and store task : " + task);
-                    
+                    //TODO:任务分配执行
 
-                    TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
-                    System.out.println(taskEntity.toString());
-//                    channel.basicAck(envelope.getDeliveryTag(), false);
+//                    TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
+//                    System.out.println(taskEntity.toString());
+                    channel.basicAck(envelope.getDeliveryTag(), false);
                 }
             };
             channel.basicConsume(TSMConf.rabbitMqQueueName,false, consumer);
