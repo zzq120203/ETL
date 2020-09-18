@@ -10,18 +10,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class ServerLeader extends TimerTask {
-    private boolean isLeader = false;
-    private String leaderName = null;
     private RedisPool redisPool = null;
     private String sha = null;
-
-    public boolean isLeader() {
-        return isLeader;
-    }
-
-    public String getLeaderName() {
-        return leaderName;
-    }
 
     private Jedis getRedis(){
         if (redisPool == null){
@@ -69,13 +59,14 @@ public class ServerLeader extends TimerTask {
             jedis = getRedis();
             String result = jedis.evalsha(sha, 1, TSMConf.serverLeader, TSMConf.nodeName, TSMConf.leaderExpire).toString();
             if (result.startsWith("true")){
-                isLeader = true;
+                TSMConf.isLeader = true;
+                TSMConf.leaderName = TSMConf.nodeName;
                 if (result.contains("elected")){
                     LogTool.logInfo(1, result);
                 }
             }else {
-                isLeader = false;
-                leaderName = result.split(":")[1];
+                TSMConf.isLeader = false;
+                TSMConf.leaderName = result.split(":")[1];
             }
         }catch (Exception e){
             LogTool.logInfo(1, e.getMessage());
