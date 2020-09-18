@@ -1,0 +1,63 @@
+#1.redis配置
+redisHost: 192.168.1.1
+redisPort: 6379
+redisSentinels:
+  - 192.168.1.1:26379
+  - 192.168.1.2:26379
+redisMaster: mymaster
+#2.rabbitmq配置
+rabbitMqUsername: admin
+rabbitMqPassword: Ntdh@123
+rabbitMqHostName: 172.20.20.221
+rabbitMqPort: 5672
+rabbitMqQueueName: DataExchange.TaskQueue
+
+#3.redis数据字段配置
+  #从队列消费的所有任务，hash格式：key->$allTasks,filed->$taskId,value->$messageFromRabbitMq
+allTasks: task.all
+  #根据outsideIp获取本机ip,如‘10.136.’则查找包含‘10.135.’的ip为本机ip
+outsideIp: outside.ip
+  #expire实现服务leader选举，string格式：key->$serverLeader，value->$serverName,周期性设置过期时间为$leaderExpire
+serverLeader: server.leader
+  #leader选举周期，即每过多久时间重新设置一次leader的过期时间
+leaderPeriod: 10
+  #leader过期时间，默认serverLeader过期时间设置为(leaderperiod+5)s
+leaderExpire: 15
+  #节点名，默认本机ip由$outsideIp设定，没有对应的ip则用hostname作为nodeName，此选项可以手动指定nodeName
+#nodeName: node1
+
+
+//server状态异常需要重新分配的task
+redistributionQueue: error-list
+
+//任务执行结果hash,filed:taskId;value:true/false
+resultTask:  result.task
+
+//执行结果返回超时时间
+resultTimeOut: 600
+//get result的时间间隔
+periOfCallResult: 5
+//节点任务队列
+nodeTasksPre: node.task.
+//all server nodes
+serverNodes: server.nodes
+//节点挂掉的时长
+nodeDownTime: down.time.nodes
+//节点挂掉多久需要迁移节点之上的任务
+migrateDownTime: 600
+//节点是否正在迁移 hash
+migrateState: nodeMigrateState
+
+
+
+nodeToTaskIdPre: nodeToId
+//hash
+//key:taskIdToNode;
+//filed:taskId;
+//node:node
+taskIdToNode: taskIdToNode
+
+heartbeatsPre: hb.nodes.
+
+
+logLevel: 2
