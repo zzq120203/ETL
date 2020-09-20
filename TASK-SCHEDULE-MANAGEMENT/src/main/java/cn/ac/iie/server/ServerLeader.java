@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * lua脚本原子特性选举调度器的master节点
+ */
 public class ServerLeader extends TimerTask {
     private String sha = null;
     private RedisPool redisPool = null;
@@ -27,6 +30,14 @@ public class ServerLeader extends TimerTask {
         loadScripts();
     }
 
+    /**
+     * KEYS[1]:redis key->TSMConf.serverLeader,
+     * ARGV[1]:redis value->TSMConf.nodeName
+     * ARGV[2]:数据保留时间
+     *
+     * 如果value不为空,value即为调度服务的主服务节点名，是本机则更新保留时间，不是则返回leader信息
+     * 如果value为空，没有master节点，原子执行脚本选举leader节点
+     */
     private void loadScripts() {
         String script =
                   "local leader = redis.call('get', KEYS[1]);"
@@ -58,14 +69,20 @@ public class ServerLeader extends TimerTask {
         try{
             jedis = getRedis();
             String result = jedis.evalsha(sha, 1, TSMConf.serverLeader, TSMConf.nodeName, TSMConf.leaderExpire).toString();
+            //true则master为本节点
             if (result.startsWith("true")){
                 TSMConf.isLeader = true;
                 TSMConf.leaderName = TSMConf.nodeName;
+                //新选举的master节点要启动master调度任务
                 if (result.contains("elected")){
                     LogTool.logInfo(1, result);
+                    //TODO:启动消费处理任务
                     startConsume();
+                    //TODO：启动其他监控服务
+
                 }
             }else {
+                //非true则不是master节点，不工作
                 TSMConf.isLeader = false;
                 TSMConf.leaderName = result.split(":")[1];
             }

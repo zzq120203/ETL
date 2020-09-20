@@ -10,8 +10,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimerTask;
 
+/**
+ * 1.检查交换任务节点服务健康状况，节点down掉后迁移节点上的任务至健康节点
+ */
 public class HealthCheckThread extends TimerTask {
-
+    public static Set<String> serverNodes = new HashSet<>():
     public static Set<String> nodesActive = new HashSet<>();
     public static Set<String> nodesMightDown = new HashSet<>();
     private RedisPool redisPool = null;
@@ -29,7 +32,7 @@ public class HealthCheckThread extends TimerTask {
     public void run() {
         //1.检查node状态
         Jedis jedis = getRedis();
-        Set<String> serverNodes = jedis.smembers(TSMConf.serverNodes);
+        serverNodes = jedis.smembers(TSMConf.serverNodes);
         for (String serverNode : serverNodes) {
             if (!jedis.exists(TSMConf.heartbeatsPre + serverNode)){
                 nodesMightDown.add(serverNode);
@@ -37,7 +40,7 @@ public class HealthCheckThread extends TimerTask {
                 nodesActive.add(serverNode);
             }
         }
-        //2判断might down节点挂掉的时间，down掉一定时间没有恢复迁移这个节点的任务
+        //2.判断might down节点挂掉的时间，down掉一定时间没有恢复迁移这个节点的任务
         if (nodesMightDown.size() > 0){
             if (nodesActive.size() > 0){
                 for (String downNode : nodesMightDown) {
@@ -53,6 +56,7 @@ public class HealthCheckThread extends TimerTask {
         }else {
             //不需要迁移
         }
+        //3.节点down状态变成running状态，新加节点
         jedis.close();
     }
     private Set<String> getActiveNodesByHb(){

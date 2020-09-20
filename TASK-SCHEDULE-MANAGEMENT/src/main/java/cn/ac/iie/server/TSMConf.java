@@ -44,6 +44,10 @@ public class TSMConf {
     public static String leaderName;
     @From(name = "isLeader", must = false)
     public static boolean isLeader = false;
+    @From(name = "httpPort")
+    public static int httpPort = 20099;
+    @From(name = "taskRunStatus")
+    public static String taskRunStatus;
 
     @From(name = "taskQueue")
     public static String taskQueue;

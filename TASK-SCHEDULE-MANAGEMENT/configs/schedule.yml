@@ -25,6 +25,10 @@ leaderPeriod: 10
 leaderExpire: 15
   #节点名，默认本机ip由$outsideIp设定，没有对应的ip则用hostname作为nodeName，此选项可以手动指定nodeName
 #nodeName: node1
+  #http服务端口
+httpPort: 20099
+  #任务执行状态hash表
+taskRunStatus: task.run.status
 
 
 //server状态异常需要重新分配的task
