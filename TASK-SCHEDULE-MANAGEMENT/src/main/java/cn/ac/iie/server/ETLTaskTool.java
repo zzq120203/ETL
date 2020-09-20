@@ -48,6 +48,7 @@ public class ETLTaskTool {
     private static void doAdd(String task){
         //TODO://get task id
         String taskId = getTaskId(task);
+        String mId = getMId(task);
         String node = selectNode();
         Jedis jedis = getRedis();
         //任务分配到节点
@@ -55,33 +56,49 @@ public class ETLTaskTool {
         pipeline.lpush(TSMConf.nodeTasksPre + node, task);
         pipeline.hset(TSMConf.taskIdToNode, taskId, node);
         pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
-        //TODO://消息主键是哪个
-//        pipeline.hset(TSMConf.taskRunStatus, taskId, "scheduling");
+        pipeline.hset(TSMConf.taskScheduling, mId, taskId);//放入正在调度中队列
         pipeline.sync();
 //        TimeOutUtil.asyncProcess(new ETLTaskTool().GetTaskResult(taskId), TSMConf.resultTimeOut);
         jedis.close();
     }
     private static void doUpdate(String task){
         String taskId = getTaskId(task);
-        Jedis jedis = redisPool.getResource();
+        String mId = getMId(task);
+        Jedis jedis = getRedis();
         String node = jedis.hget(TSMConf.taskIdToNode, taskId);
         if (node == null){
             LogTool.logInfo(1, "taskId=" + taskId + ", all server nodes have no this task, " +
                     "action 'update' do not pull to server.");
         }else {
-            jedis.lpush(TSMConf.nodeToTaskIdPre + node, task);
+            Pipeline pipeline = jedis.pipelined();
+            pipeline.lpush(TSMConf.nodeTasksPre + node, task);
+            pipeline.hset(TSMConf.taskIdToNode, taskId, node);
+            pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
+            pipeline.hset(TSMConf.taskScheduling, mId, taskId);//放入正在调度中队列
+            pipeline.sync();
+            pipeline.close();
         }
+        jedis.close();
     }
     private static void doDelete(String task){
         String taskId = getTaskId(task);
-        Jedis jedis = redisPool.getResource();
+        String mId = getMId(task);
+        Jedis jedis = getRedis();
         String node = jedis.hget(TSMConf.taskIdToNode, taskId);
         if (node == null){
             LogTool.logInfo(1, "taskId=" + taskId + ", all server nodes have no this task, " +
                     "action 'delete' do not pull to server.");
         }else {
-            jedis.lpush(TSMConf.nodeToTaskIdPre + node, task);
+            Pipeline pipeline = jedis.pipelined();
+            pipeline.lpush(TSMConf.nodeTasksPre + node, task);
+            pipeline.hset(TSMConf.taskIdToNode, taskId, node);
+            pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
+            pipeline.hset(TSMConf.taskScheduling, mId, taskId);//放入正在调度中队列
+            pipeline.sync();
+            pipeline.close();
         }
+        //成功后删除元数据
+        jedis.close();
     }
     private static void deleteMeta(String taskId){
         Jedis jedis = getRedis();
@@ -173,6 +190,10 @@ public class ETLTaskTool {
     public static String getTaskId(String task){
         TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
         return taskEntity.getTask_id();
+    }
+    public static String getMId(String task){
+        TaskEntity taskEntity = JSON.parseObject(task, new TypeReference<TaskEntity>() {});
+        return taskEntity.getM_id();
     }
 
     /**

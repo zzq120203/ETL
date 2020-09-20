@@ -46,8 +46,10 @@ public class TSMConf {
     public static boolean isLeader = false;
     @From(name = "httpPort")
     public static int httpPort = 20099;
-    @From(name = "taskRunStatus")
-    public static String taskRunStatus;
+    @From(name = "taskScheduling")
+    public static String taskScheduling;
+    @From(name = "taskScheduled")
+    public static String taskScheduled;
 
     @From(name = "taskQueue")
     public static String taskQueue;

@@ -14,7 +14,7 @@ import java.util.TimerTask;
  * 1.检查交换任务节点服务健康状况，节点down掉后迁移节点上的任务至健康节点
  */
 public class HealthCheckThread extends TimerTask {
-    public static Set<String> serverNodes = new HashSet<>():
+    public static Set<String> serverNodes = new HashSet<>();
     public static Set<String> nodesActive = new HashSet<>();
     public static Set<String> nodesMightDown = new HashSet<>();
     private RedisPool redisPool = null;
