@@ -27,8 +27,10 @@ leaderExpire: 15
 #nodeName: node1
   #http服务端口
 httpPort: 20099
-  #任务执行状态hash表
-taskRunStatus: task.run.status
+  #任务正在调度
+taskScheduling: task.scheduling
+  #任务调度成功
+taskScheduled: task.scheduled
 
 
 //server状态异常需要重新分配的task
