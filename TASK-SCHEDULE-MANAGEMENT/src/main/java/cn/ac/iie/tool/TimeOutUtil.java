@@ -1,23 +1,22 @@
 package cn.ac.iie.tool;
 
 
-import cn.ac.iie.server.ETLTask;
-
 import java.util.concurrent.*;
 import java.util.function.Supplier;
 
+import cn.ac.iie.server.ETLTaskTool;
+
 public class TimeOutUtil {
 
-        public static ExecutorService executor = Executors.newFixedThreadPool(100);
+    public static ExecutorService executor = Executors.newFixedThreadPool(100);
 
     /**
      *
-     * @param task  继承了Callable的对象
-     * @param timeout   超时时间
+     * @param task    继承了Callable的对象
+     * @param timeout 超时时间
      * @return
      */
-        public static String process(ETLTask.GetTaskResult task, long timeout) {
-            long time0 = System.currentTimeMillis();
+    public static String process(ETLTaskTool.GetTaskResult task, long timeout) {
             if (task == null) {
                 return null;
             }
@@ -39,7 +38,7 @@ public class TimeOutUtil {
         }
 
 
-        public static CompletableFuture<String> asyncProcess(ETLTask.GetTaskResult task, long timeout) {
+        public static CompletableFuture<String> asyncProcess(ETLTaskTool.GetTaskResult task, long timeout) {
             if (task == null) {
                 return null;
             }
@@ -52,9 +51,9 @@ public class TimeOutUtil {
 
                     }else {
                         //任务执行
-                        if (result.equals("true")){
+                        if (result.equals("true")) {
                             LogTool.logInfo(1, "任务执行成功 taskId=" + task.getId());
-                        }else if (result.equals("false")){
+                        } else if (result.equals("false")) {
 
                         }
                     }

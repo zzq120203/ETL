@@ -1,9 +1,9 @@
 package cn.ac.iie.tool;
 
-import cn.ac.iie.server.TSMConf;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import cn.ac.iie.configs.TSMConf;
 
 public class LogTool {
     private static String getTime(){

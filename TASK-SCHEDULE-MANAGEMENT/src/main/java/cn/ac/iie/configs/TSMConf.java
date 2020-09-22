@@ -1,8 +1,7 @@
-package cn.ac.iie.server;
+package cn.ac.iie.configs;
 
 import com.zzq.dolls.config.From;
 
-import java.util.HashMap;
 import java.util.Set;
 
 @From(name = "configs/schedule.yml", alternateNames = "schedule.yml")
@@ -44,7 +43,7 @@ public class TSMConf {
     public static String leaderName;
     @From(name = "isLeader", must = false)
     public static boolean isLeader = false;
-    @From(name = "httpPort")
+    @From(name = "httpPort", must = false)
     public static int httpPort = 20099;
     @From(name = "taskScheduling")
     public static String taskScheduling;

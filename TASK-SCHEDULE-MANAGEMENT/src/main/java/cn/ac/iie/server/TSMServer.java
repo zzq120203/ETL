@@ -1,5 +1,6 @@
 package cn.ac.iie.server;
 
+import cn.ac.iie.configs.TSMConf;
 import cn.ac.iie.tool.LogTool;
 import com.zzq.dolls.config.LoadConfig;
 
@@ -34,7 +35,7 @@ public class TSMServer {
             //3.主备模式，leader 选举线程，所有调度任务只在master节点执行
             Timer timer = new Timer();
             ServerLeader serverLeader = new ServerLeader();
-            timer.schedule(serverLeader, 10, Long.parseLong(TSMConf.leaderPeriod)*1000l);
+            timer.schedule(serverLeader, 10, Long.parseLong(TSMConf.leaderPeriod) * 1000L);
             //4.TODO://http服务，调度数据监控界面
             HttpServer httpServer = new HttpServer();
             httpServer.start();

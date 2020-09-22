@@ -1,5 +1,3 @@
-import cn.ac.iie.server.TSMConf;
-import redis.clients.jedis.Jedis;
 
 public class TestMa {
     public static void main(String[] args) throws Exception {
