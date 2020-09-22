@@ -80,4 +80,8 @@ public class TSMConf {
 
     @From(name = "logLevel")
     public static int logLevel;
+
+    @From(name = "isAsync", must = false)
+    public static boolean isAsync = true;
+
 }

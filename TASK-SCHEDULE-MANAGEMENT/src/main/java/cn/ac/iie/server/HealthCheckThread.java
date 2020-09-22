@@ -57,11 +57,6 @@ public class HealthCheckThread extends TimerTask {
         });
     }
 
-    private Set<String> getActiveNodesByHb() {
-        // should add LivenessProbe
-        return redisPool.jedis(jedis -> jedis.keys(TSMConf.heartbeatsPre));
-    }
-
     // private boolean doMigrate(String node){
     // Jedis jedis = redisPool.getResource();
     // String result = (String)jedis.evalsha(sha, 1, TSMConf.migrateState, node);
