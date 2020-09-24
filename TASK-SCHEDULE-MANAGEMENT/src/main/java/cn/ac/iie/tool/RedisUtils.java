@@ -1,19 +1,23 @@
 package cn.ac.iie.tool;
 
 import java.util.Set;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
+import com.zzq.dolls.redis.RedisMode;
 import com.zzq.dolls.redis.RedisPool;
 
 import cn.ac.iie.configs.TSMConf;
 import cn.ac.iie.entity.TaskEntity;
 
 public class RedisUtils {
-    
+
     public final static RedisPool redisPool;
-    
+
     static {
-        redisPool = RedisPool.builder().urls(TSMConf.redisSentinels).masterName(TSMConf.myMaster).build();
+        redisPool = RedisPool.builder().urls(TSMConf.redisSentinels).masterName(TSMConf.myMaster)
+                .password(TSMConf.redisPass).redisMode(RedisMode.STANDALONE).build();
     }
 
     /**
@@ -26,9 +30,20 @@ public class RedisUtils {
         redisPool.jedis(jedis -> jedis.hset(TSMConf.allTask, taskId, JSON.toJSONString(task)));
     }
 
+    /**
+     * 删除任务 数据
+     * 
+     * @param taskId
+     */
+    public static void taskDelete(String taskId) {
+        redisPool.jedis(jedis -> jedis.hdel(TSMConf.allTask, taskId));
+    }
+
     public static Set<String> getActiveNodesByHb() {
         // should add LivenessProbe
-        return redisPool.jedis(jedis -> jedis.keys(TSMConf.heartbeatsPre));
+        return redisPool.jedis(jedis -> jedis.keys("*" + TSMConf.heartbeatsPre)).stream()
+                .map(key -> key.split("-")[0])
+                .collect(Collectors.toSet());
     }
 
 }

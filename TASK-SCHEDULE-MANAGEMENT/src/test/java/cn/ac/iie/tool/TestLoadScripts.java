@@ -1,4 +1,4 @@
-package cn.ac.iie.scripts;
+package cn.ac.iie.tool;
 
 import org.junit.Test;
 

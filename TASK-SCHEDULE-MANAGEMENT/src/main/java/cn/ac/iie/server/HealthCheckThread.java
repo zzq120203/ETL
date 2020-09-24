@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TimerTask;
 
-import com.zzq.dolls.redis.RedisPool;
+import static cn.ac.iie.tool.RedisUtils.redisPool;
 
 /**
  * 1.检查交换任务节点服务健康状况，节点down掉后迁移节点上的任务至健康节点
@@ -16,11 +16,6 @@ public class HealthCheckThread extends TimerTask {
     public static Set<String> serverNodes = new HashSet<>();
     public static Set<String> nodesActive = new HashSet<>();
     public static Set<String> nodesMightDown = new HashSet<>();
-    private RedisPool redisPool = null;
-
-    public HealthCheckThread() {
-        redisPool = RedisPool.builder().urls(TSMConf.redisSentinels).masterName(TSMConf.myMaster).build();
-    }
 
     @Override
     public void run() {
@@ -29,7 +24,7 @@ public class HealthCheckThread extends TimerTask {
 
             serverNodes = jedis.smembers(TSMConf.serverNodes);
             for (String serverNode : serverNodes) {
-                if (!jedis.exists(TSMConf.heartbeatsPre + serverNode)) {
+                if (!jedis.exists(serverNode + TSMConf.heartbeatsPre)) {
                     nodesMightDown.add(serverNode);
                 } else {
                     nodesActive.add(serverNode);

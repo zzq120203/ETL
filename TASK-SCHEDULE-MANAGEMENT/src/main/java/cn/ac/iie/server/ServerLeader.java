@@ -1,23 +1,20 @@
 package cn.ac.iie.server;
 
 import cn.ac.iie.configs.TSMConf;
-import cn.ac.iie.scripts.LoadScript;
+import cn.ac.iie.tool.LoadScript;
 import cn.ac.iie.tool.LogTool;
 
 import java.util.TimerTask;
 
-import com.zzq.dolls.redis.RedisPool;
+import static cn.ac.iie.tool.RedisUtils.redisPool;;
 
 /**
  * lua脚本原子特性选举调度器的master节点
  */
 public class ServerLeader extends TimerTask {
     private String sha;
-    private RedisPool redisPool;
 
     public ServerLeader() {
-        redisPool = RedisPool.builder().urls(TSMConf.redisSentinels).masterName(TSMConf.myMaster).build();
-
         String script = LoadScript.selectLeaader();
         sha = redisPool.jedis(jedis -> jedis.scriptLoad(script));
     }

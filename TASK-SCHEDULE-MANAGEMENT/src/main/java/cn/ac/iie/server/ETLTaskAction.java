@@ -6,17 +6,18 @@ import java.util.Set;
 
 import cn.ac.iie.configs.TSMConf;
 import cn.ac.iie.entity.TaskEntity;
+import cn.ac.iie.error.ScheduleException;
 import cn.ac.iie.tool.RedisUtils;
 
 import static cn.ac.iie.tool.RedisUtils.redisPool;
 
 public interface ETLTaskAction {
 
-    public boolean doAdd(TaskEntity task);
+    public boolean doAdd(TaskEntity task) throws ScheduleException;
 
-    public boolean doDelete(TaskEntity task);
+    public boolean doDelete(TaskEntity task) throws ScheduleException;
 
-    public boolean doUpdate(TaskEntity task);
+    public boolean doUpdate(TaskEntity task) throws ScheduleException;
     
 
     /**

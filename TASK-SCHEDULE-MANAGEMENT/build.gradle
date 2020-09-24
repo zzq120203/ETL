@@ -13,6 +13,8 @@ version 'v1.0'
 
 sourceCompatibility = 1.8
 
+archivesBaseName = 'tsm'
+
 repositories {
     jcenter()
 }
@@ -36,6 +38,24 @@ dependencies {
 
     compile 'org.yaml:snakeyaml:1.23'
 
+    compile 'org.slf4j:slf4j-simple:1.7.26'
+
     compile fileTree(dir: 'olib')
 }
 
+jar {
+    // from {
+    //     //添加依懒到打包文件
+    //     configurations.runtime.collect { zipTree(it) }
+    // }
+
+    manifest {
+        attributes 'Main-Class': 'cn.ac.iie.server.TSMServer'
+        attributes "Class-Path": configurations.compile.collect { "lib/${it.name}" }.join(' ')
+    }
+}
+
+task copyJar(type: Copy) {
+    from configurations.runtime
+    into('build/libs/lib')
+}
