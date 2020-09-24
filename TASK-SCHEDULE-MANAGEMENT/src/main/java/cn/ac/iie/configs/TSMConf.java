@@ -11,14 +11,26 @@ public class TSMConf {
     /**
      * redis urls
      */
-    @From(alternateNames = "redisUrls")
-    public static List<String> redisSentinels;
+    @From(alternateNames = "redisUrl")
+    public static List<String> redisUrls;
 
     /**
      * sentinel master
      */
-    @From(alternateNames = "redisMaster")
-    public static String myMaster;
+    @From(must = false)
+    public static String redisMaster;
+
+    /**
+     * redis mode 
+     */
+    @From(must = false)
+    public static int redisMode = 0;
+
+    /**
+     * redis db
+     */
+    @From(must = false)
+    public static int redisDb = 0;
 
     /**
      * auth password
@@ -213,5 +225,11 @@ public class TSMConf {
      */
     @From(must = false)
     public static boolean isAsync = true;
+
+    /**
+     * 异步任务超时时间
+     */
+    @From(name = "aysncTimeoutMS" , must = false)
+    public static long aysncTimeout = 30 * 1000L;
 
 }

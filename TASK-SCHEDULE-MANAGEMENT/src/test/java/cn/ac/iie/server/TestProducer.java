@@ -14,7 +14,7 @@ public class TestProducer {
         ConnectionFactory factory = new ConnectionFactory();
         String userName = "admin";
         String password = "Ntdh@123";
-        String queueName = "gg.queue";
+        String queueName = "DataExchange.TaskQueue";
         String hostName = "172.20.20.221";
         int portNumber = 5672;
         factory.setUsername(userName);
@@ -47,16 +47,13 @@ public class TestProducer {
     //            boolean mandatory = false;
             //queue没有Consumer，消息返回给Producer，不加入queue。有Consumer，则加入queue投递给Consumer，RabbitMQ3.0后已经废弃，默认false
     //            boolean immediate = false;
-                String msg = "ggMessage-";
+            String msg = "{\"task_id\":\"3b57b7c3-7a31-4deb-85ee-5832b4d4f637\",\"m_id\":\"99b12480-b199-4c45-b8ca-715e94d4aa1e\",\"app_id\":\"af242998-1683-4e14-9a26-b759252c0514\",\"tenant_id\":\"aded50a2-2378-4077-bdfc-948a5e554932\",\"task_name\":\"应急管理局_行政审批局_DSC设备报警信息表\",\"state\":0}";
             //deliveryMode为2，表示消息会持久化到磁盘
-            for (int i = 1; i < 21; i++) {
-                System.out.println("send " + i);
                 channel.basicPublish(
                         "",
                         queueName,
                         null,
-                        (msg + i).getBytes("UTF-8"));
-            }
+                        (msg).getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } catch (IOException e) {

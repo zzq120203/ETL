@@ -1,11 +1,9 @@
 package cn.ac.iie.tool;
 
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSON;
-import com.zzq.dolls.redis.RedisMode;
 import com.zzq.dolls.redis.RedisPool;
 
 import cn.ac.iie.configs.TSMConf;
@@ -16,8 +14,11 @@ public class RedisUtils {
     public final static RedisPool redisPool;
 
     static {
-        redisPool = RedisPool.builder().urls(TSMConf.redisSentinels).masterName(TSMConf.myMaster)
-                .password(TSMConf.redisPass).redisMode(RedisMode.STANDALONE).build();
+        redisPool = RedisPool.builder().urls(TSMConf.redisUrls)
+                .masterName(TSMConf.redisMaster)
+                .password(TSMConf.redisPass)
+                .redisMode(TSMConf.redisMode)
+                .db(TSMConf.redisDb).build();
     }
 
     /**

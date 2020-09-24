@@ -13,6 +13,8 @@ import static cn.ac.iie.tool.RedisUtils.redisPool;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 交换服务调度，异步接口 通过redis实现
@@ -32,14 +34,15 @@ public class AsyncETLTaskAction implements ETLTaskAction {
             Pipeline pipeline = jedis.pipelined();
             pipeline.lpush(TSMConf.nodeTasksPre + node, JSON.toJSONString(task));
             pipeline.hset(TSMConf.taskIdToNode, taskId, node);
-            pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
+            pipeline.sadd(TSMConf.nodeToTaskIdPre + node, taskId);
             pipeline.hset(TSMConf.taskScheduling, mId, taskId);// 放入正在调度中队列
             pipeline.sync();
             // TimeOutUtil.asyncProcess(new ETLTaskTool().GetTaskResult(taskId),
             // TSMConf.resultTimeOut);
             return null;
         });
-
+        LogTool.logInfo(1, "task(" + task.getM_id() + ") -> " + node);
+        
         async(mId);
 
         return false;
@@ -59,18 +62,18 @@ public class AsyncETLTaskAction implements ETLTaskAction {
                     Pipeline pipeline = jedis.pipelined();
                     pipeline.lpush(TSMConf.nodeTasksPre + node, JSON.toJSONString(task));
                     pipeline.hset(TSMConf.taskIdToNode, taskId, node);
-                    pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
+                    pipeline.sadd(TSMConf.nodeToTaskIdPre + node, taskId);
                     pipeline.hset(TSMConf.taskScheduling, mId, taskId);// 放入正在调度中队列
                     pipeline.sync();
                     pipeline.close();
                 }
+                LogTool.logInfo(1, "task(" + task.getM_id() + ") -> " + node);
             } catch (Exception e) {
                 LogTool.logInfo(1, e.getMessage());
             }
             // 成功后删除元数据
             return null;
         });
-
         async(mId);
 
         return false;
@@ -90,17 +93,17 @@ public class AsyncETLTaskAction implements ETLTaskAction {
                     Pipeline pipeline = jedis.pipelined();
                     pipeline.lpush(TSMConf.nodeTasksPre + node, JSON.toJSONString(task));
                     pipeline.hset(TSMConf.taskIdToNode, taskId, node);
-                    pipeline.sadd(TSMConf.nodeToTaskIdPre, taskId);
+                    pipeline.sadd(TSMConf.nodeToTaskIdPre + node, taskId);
                     pipeline.hset(TSMConf.taskScheduling, mId, taskId);// 放入正在调度中队列
                     pipeline.sync();
                     pipeline.close();
                 }
+                LogTool.logInfo(1, "task(" + task.getM_id() + ") -> " + node);
             } catch (Exception e) {
                 LogTool.logInfo(1, e.getMessage());
             }
             return null;
         });
-
         async(mId);
 
         return false;
@@ -116,9 +119,9 @@ public class AsyncETLTaskAction implements ETLTaskAction {
 
                     if (state != null) {
                         if ("1".equals(state)) {
-                            LogTool.logInfo(1, msgId + " execution success");
+                            LogTool.logInfo(1, msgId + " execution success(1)");
                         } else {
-
+                            LogTool.logInfo(1, msgId + " execution failed(" + state + ")");
                         }
                         break;
                     }
@@ -130,11 +133,14 @@ public class AsyncETLTaskAction implements ETLTaskAction {
         thread.start();
 
         try {
-            future.get();
+            future.get(TSMConf.aysncTimeout, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (TimeoutException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }

@@ -17,6 +17,9 @@ public class RabbitMQConsumer implements Runnable {
 
     @Override
     public void run() {
+
+        LogTool.logInfo(1, "consumer is starting.");
+
         factory = new ConnectionFactory();
         factory.setUsername(TSMConf.rabbitMqUsername);
         factory.setPassword(TSMConf.rabbitMqPassword);
