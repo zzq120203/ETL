@@ -25,6 +25,7 @@ public class HealthCheckThread extends TimerTask {
             serverNodes = jedis.smembers(TSMConf.serverNodes);
             for (String serverNode : serverNodes) {
                 if (!jedis.exists(serverNode + TSMConf.heartbeatsPre)) {
+                    nodesActive.remove(serverNode);
                     nodesMightDown.add(serverNode);
                 } else {
                     nodesActive.add(serverNode);

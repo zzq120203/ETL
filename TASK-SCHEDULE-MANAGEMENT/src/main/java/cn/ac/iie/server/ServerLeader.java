@@ -31,7 +31,7 @@ public class ServerLeader extends TimerTask {
                 // 新选举的master节点要启动master调度任务
                 if (result.contains("elected")) {
                     LogTool.logInfo(1, result);
-                    // TODO:启动消费处理任务
+                    // 启动消费处理任务
                     startConsume();
                     // TODO：启动其他监控服务
 
