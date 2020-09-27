@@ -7,28 +7,28 @@ import org.junit.Test;
 public class TestConsumer {
     
     
-    @Test
-    public static void main(String[] args) {
-        RabbitConsumer rabbitConsumer = null;
-        try {
-            rabbitConsumer = RabbitConsumer.builder()
-            .url("172.20.20.221:5672")
-            .user("admin")
-            .password("Ntdh@123")
-            .topic("DataExchange.TaskQueue")
+    // @Test
+    // public static void main(String[] args) {
+    //     RabbitConsumer rabbitConsumer = null;
+    //     try {
+    //         rabbitConsumer = RabbitConsumer.builder()
+    //         .url("172.20.20.221:5672")
+    //         .user("admin")
+    //         .password("Ntdh@123")
+    //         .topic("DataExchange.TaskQueue")
             
-            .build();
+    //         .build();
 
-            rabbitConsumer.message(bytes -> {
-                System.out.println(new String(bytes));
-                return true;
-            });
+    //         rabbitConsumer.message(bytes -> {
+    //             System.out.println(new String(bytes));
+    //             return true;
+    //         });
 
-            rabbitConsumer.start();
+    //         rabbitConsumer.start();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
     
 }

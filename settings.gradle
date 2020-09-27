@@ -10,3 +10,5 @@
 rootProject.name = 'ETL'
 
 include 'TASK-SCHEDULE-MANAGEMENT'
+
+include 'PLUGIN-MORE2ONE'

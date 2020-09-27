@@ -52,18 +52,4 @@ public class HealthCheckThread extends TimerTask {
             return null;
         });
     }
-
-    // private boolean doMigrate(String node){
-    // Jedis jedis = redisPool.getResource();
-    // String result = (String)jedis.evalsha(sha, 1, TSMConf.migrateState, node);
-    // if (result.equals("true")){
-    // //do nothing
-    // }else {
-    // //TODO://
-    //
-    //
-    // }
-    // jedis.close();
-    // return true;
-    // }
 }
